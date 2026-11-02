@@ -1,6 +1,6 @@
 # Amiga port intake: Omnispeak
 
-- Port Atlas: [g-omnispeak](https://www.amigachrome.com/ports/#g-omnispeak)
+- Port Atlas: [g-omnispeak](https://www.amicradle.com/ports/#g-omnispeak)
 - Priority: `P1`
 - Atlas decision: `port`
 - Upstream source: `https://github.com/sulix/omnispeak`
