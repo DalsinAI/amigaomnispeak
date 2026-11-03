@@ -1,0 +1,26 @@
+{
+  "about": "The Workbench icons of the Keen drawer: python3 AMICRADLE/scripts/port_icons.py icons/icons.json --out icons (DalsinAI/amicradle). The art is Omnispeak's own program icon (unixicon.png, GPL with the engine).",
+  "drawer": {
+    "name": "Keen"
+  },
+  "badge": "art/unixicon.png",
+  "icons": [
+    {
+      "file": "omnispeak.info",
+      "kind": "tool",
+      "stack": 262144
+    },
+    {
+      "file": "ReadMe.info",
+      "kind": "readme"
+    },
+    {
+      "file": "LICENSE.txt.info",
+      "kind": "readme"
+    },
+    {
+      "file": "Data-ReadMe.txt.info",
+      "kind": "readme"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+Omnispeak @VERSION@ for AmigaOS 3.x (AmiCradle)
+=================================================================
+
+Omnispeak is an open-source engine for Commander Keen 4, 5 and 6 ("Goodbye
+Galaxy" and "Aliens Ate My Baby Sitter"). This is its AmigaOS 3.x build for
+a 68040 or 68060 with an FPU, on acsdl12 (SDL 1.2 over ACGame and AHI).
+Status: TESTING, not a release.
+
+Requirements
+------------
+
+- AmigaOS 3.x, a 68040 or 68060 with an FPU, AGA or an RTG board.
+- AHI for sound.
+- The Keen game data (not in this archive): see Data-ReadMe.txt.
+
+Installing
+----------
+
+Unpack the archive where you keep games (lha x omnispeak-...lha Games:),
+then copy the Keen data files into the Keen drawer itself. Settings and
+saves are written there too.
+
+Playing
+-------
+
+- Double-click the omnispeak icon, or from a Shell: cd to the drawer, then
+  omnispeak. It plays the episode whose data it finds; with more than one,
+  /EPISODE 4, /EPISODE 5 or /EPISODE 6 picks it.
+- ENV:ACGame/Display set to AGA or RTG chooses the screen.
+- Keys: the arrow keys move, Ctrl jumps, Alt pogos, Space fires, Escape
+  opens the menu.
+
+Licence
+-------
+
+Omnispeak is GPL-2.0 (LICENSE.txt); its source is at
+https://github.com/sulix/omnispeak. The Keen data belongs to its makers and
+is not part of this archive. The icons are drawn from Omnispeak's own
+program icon.
+
+Build
+-----
+
+Engine commit @SOURCE_COMMIT@,
+built with:
+@COMPILER_RELEASE@
+The program's SHA-256:
+@EXECUTABLE_SHA256@
+
+Port: the AmiCradle Team, https://github.com/DalsinAI/amigaomnispeak

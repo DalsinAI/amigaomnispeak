@@ -1,0 +1,74 @@
+{
+  "drawer": "Keen",
+  "drawer_icon": "icons/Keen.info",
+  "archive": "omnispeak-{version}-68040",
+  "members": [
+    {
+      "name": "omnispeak",
+      "build": "omnispeak",
+      "check": "executable_sha256"
+    },
+    {
+      "name": "omnispeak.info",
+      "repo": "icons/omnispeak.info"
+    },
+    {
+      "name": "",
+      "tar": "episodes.tar"
+    },
+    {
+      "name": "ReadMe",
+      "readme": "package/ReadMe.in"
+    },
+    {
+      "name": "ReadMe.info",
+      "repo": "icons/ReadMe.info"
+    },
+    {
+      "name": "LICENSE.txt",
+      "repo": "LICENSE"
+    },
+    {
+      "name": "LICENSE.txt.info",
+      "repo": "icons/LICENSE.txt.info"
+    },
+    {
+      "name": "Data-ReadMe.txt",
+      "repo": "package/data-ReadMe.txt"
+    },
+    {
+      "name": "Data-ReadMe.txt.info",
+      "repo": "icons/Data-ReadMe.txt.info"
+    }
+  ],
+  "aminet": [
+    [
+      "Short",
+      "Commander Keen 4-6 engine (Omnispeak), 68040+FPU"
+    ],
+    [
+      "Author",
+      "Omnispeak: David Gow and contributors; port: AmiCradle Team"
+    ],
+    [
+      "Uploader",
+      "AmiCradle Team"
+    ],
+    [
+      "Type",
+      "game/jump"
+    ],
+    [
+      "Version",
+      "{version}"
+    ],
+    [
+      "Requires",
+      "AmigaOS 3.x, 68040/68060 with FPU, AGA or RTG, AHI, Keen 4-6 data"
+    ],
+    [
+      "Architecture",
+      "m68k-amigaos >= 3.0"
+    ]
+  ]
+}
