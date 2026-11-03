@@ -109,6 +109,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Default paths for Omni / Keen / User files.
 // (See the id_fs.h documentation for more info.)
+#if defined(__amigaos__) && !defined(FS_DEFAULT_KEEN_PATH)
+// The program's own drawer, wherever it was started from
+#define FS_DEFAULT_KEEN_PATH "PROGDIR:"
+#define FS_DEFAULT_USER_PATH "PROGDIR:"
+#endif
 #ifndef FS_DEFAULT_KEEN_PATH
 #define FS_DEFAULT_KEEN_PATH "."
 #endif

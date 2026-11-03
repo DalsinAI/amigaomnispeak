@@ -576,7 +576,12 @@ int main(int argc, char *argv[])
 
 	bool isFullScreen = CFG_GetConfigBool("fullscreen", false);
 	bool isAspectCorrected = CFG_GetConfigBool("aspect", true);
+#ifdef __amigaos__
+	// No overscan border: 320x200 is a screen mode, 336x207 is not
+	bool hasBorder = CFG_GetConfigBool("border", false);
+#else
 	bool hasBorder = CFG_GetConfigBool("border", true);
+#endif
 	bool isIntegerScaled = CFG_GetConfigBool("integer", false);
 	bool overrideCopyProtection = CFG_GetConfigBool("ck6_noCreatureQuestion", false);
 	int swapInterval = CFG_GetConfigInt("swapInterval", 1);

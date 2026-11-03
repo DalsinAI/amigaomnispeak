@@ -499,7 +499,12 @@ void SD_SDL_Startup(void)
 		sd_oplEmulator = SD_OPL_EMULATOR_DBOPL;
 	}
 
+#ifdef __amigaos__
+	// The sound process keeps the time: no timer thread
+	SD_SDL_useTimerFallback = !CFG_GetConfigBool("sd_sdl_audioSync", true);
+#else
 	SD_SDL_useTimerFallback = !CFG_GetConfigBool("sd_sdl_audioSync", false);
+#endif
 
 	for (int i = 0; i < us_argc; ++i)
 	{
@@ -544,7 +549,11 @@ void SD_SDL_Startup(void)
 	}
 	else
 	{
+#ifdef __amigaos__
+		SD_SDL_AudioSpec.freq = CFG_GetConfigInt("sampleRate", 22050); // the OPL emulation's cost goes with the rate
+#else
 		SD_SDL_AudioSpec.freq = CFG_GetConfigInt("sampleRate", 49716); // OPL rate
+#endif
 		SD_SDL_AudioSpec.format = AUDIO_S16SYS;
 		SD_SDL_AudioSpec.channels = CFG_GetConfigInt("audioChannels", 2);
 		// Under wine, small buffer sizes cause a lot of crackling, so we double the
