@@ -198,6 +198,17 @@ size_t FS_GetFileSize(FS_File file)
 #include <sys/types.h>
 #include <unistd.h>
 
+// A directory and a name, as one path: AmigaOS ends a device name with ':',
+// and "dir:/name" would mean the directory above.
+static void FSL_JoinPath(char *out, const char *dirPath, const char *fileName)
+{
+	size_t len = strlen(dirPath);
+	if (len && (dirPath[len - 1] == ':' || dirPath[len - 1] == '/'))
+		sprintf(out, "%s%s", dirPath, fileName);
+	else
+		sprintf(out, "%s/%s", dirPath, fileName);
+}
+
 FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileName, bool forWrite)
 {
 	DIR *currentDirPtr = opendir(dirPath);
@@ -211,7 +222,7 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 		{
 			// We've found our file!
 			char *fullFileName = (char *)malloc(strlen(dirPath) + 2 + strlen(dirEntry->d_name));
-			sprintf(fullFileName, "%s/%s", dirPath, dirEntry->d_name);
+			FSL_JoinPath(fullFileName, dirPath, dirEntry->d_name);
 
 			FS_File f;
 			if (forWrite)
@@ -231,7 +242,7 @@ FS_File FSL_OpenFileInDirCaseInsensitive(const char *dirPath, const char *fileNa
 FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 {
 	char *fullFileName = (char *)malloc(strlen(dirPath) + 2 + strlen(fileName));
-	sprintf(fullFileName, "%s/%s", dirPath, fileName);
+	FSL_JoinPath(fullFileName, dirPath, fileName);
 
 	FS_File f = fopen(fullFileName, "wb");
 	free(fullFileName);
@@ -240,8 +251,25 @@ FS_File FSL_CreateFileInDir(const char *dirPath, const char *fileName)
 
 bool FSL_IsDirWritable(const char *dirPath)
 {
+#ifdef __amigaos__
+	// libnix's access() does not answer this for a directory: try a file.
+	char *testName = (char *)malloc(strlen(dirPath) + 16);
+	FILE *testFile;
+	bool writable;
+	FSL_JoinPath(testName, dirPath, "omnispeak.tmp");
+	testFile = fopen(testName, "wb");
+	writable = testFile != NULL;
+	if (testFile)
+	{
+		fclose(testFile);
+		remove(testName);
+	}
+	free(testName);
+	return writable;
+#else
 	// TODO: Check this works on DOS with (e.g.) write protected floppies.
 	return (access(dirPath, W_OK | X_OK) == 0);
+#endif
 }
 
 size_t FS_GetFileSize(FS_File file)

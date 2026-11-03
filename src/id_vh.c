@@ -77,10 +77,12 @@ static VH_FontChar VH_GetFontCharInfo(int chunk, unsigned char ch)
 {
 	VH_FontChar charInfo;
 	uint8_t *fntData = (uint8_t *)CA_GetGrChunk(chunk, 3, "Font", true);
+	// The header is in the machine's byte order already (id_ca.c swaps it)
+	VH_Font *font = (VH_Font *)fntData;
 
-	charInfo.height = fntData[0] | fntData[1] << 8;
-	charInfo.data = fntData + (fntData[ch * 2 + 2] | fntData[ch * 2 + 3] << 8);
-	charInfo.width = fntData[2 * 256 + 2 + ch];
+	charInfo.height = font->height;
+	charInfo.data = fntData + font->location[ch];
+	charInfo.width = font->width[ch];
 
 	return charInfo;
 }
