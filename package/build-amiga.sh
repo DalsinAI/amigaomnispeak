@@ -22,8 +22,15 @@ cd "$ROOT"
 
 make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" ACSDL="$ACSDL" -j4 > "$OUT/build-output.txt" 2>&1 || { tail -n 60 "$OUT/build-output.txt"; exit 1; }
 cp build/amigaos/Omnispeak/omnispeak "$BUILD/omnispeak"
-# Omnispeak's own episode files (GPL, with the engine), at the drawer's root.
-tar -C build/amigaos/Omnispeak --format=ustar -cf "$BUILD/episodes.tar" keen4 keen5 keen6e14 keen6e15
+# Omnispeak's own episode files (GPL, with the engine). It reads them from
+# the drawer itself (PROGDIR:), so Keen 4, 5 and 6 v1.4 go at its root; Keen
+# 6 v1.5's have the same names and wait in Keen6-v1.5 (Data-ReadMe.txt).
+EP="$BUILD/episodes"
+mkdir -p "$EP/Keen6-v1.5"
+cp build/amigaos/Omnispeak/keen4/* build/amigaos/Omnispeak/keen5/* \
+   build/amigaos/Omnispeak/keen6e14/* "$EP/"
+cp build/amigaos/Omnispeak/keen6e15/* "$EP/Keen6-v1.5/"
+tar -C "$EP" --format=ustar -cf "$BUILD/episodes.tar" .
 
 # What the ReadMe and the check name: the program's SHA-256, the commit, the
 # compiler and the commit's date (the archive's dates, so the same inputs
