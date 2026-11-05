@@ -646,7 +646,10 @@ void SD_SDL_Unlock()
 
 void SD_SDL_WaitTick()
 {
-	SDL_mutex *mtx = SDL_CreateMutex();
+	// One mutex for every wait: a new one each tick was never freed.
+	static SDL_mutex *mtx;
+	if (!mtx)
+		mtx = SDL_CreateMutex();
 	SDL_LockMutex(mtx);
 	// Timeout of 2ms, as the PIT rate is ~1.1ms..
 	SDL_CondWaitTimeout(SD_SDL_TimerConditionVar, mtx, 2);
