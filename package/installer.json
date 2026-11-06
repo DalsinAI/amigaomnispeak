@@ -1,0 +1,13 @@
+{
+  "name": "Commander Keen (Omnispeak)",
+  "version": "git144f21e-amigaos3-test2",
+  "drawer": "Keen",
+  "program": "omnispeak",
+  "cpu": "68040",
+  "fpu": true,
+  "space": 3000000,
+  "modules": [],
+  "keep": [],
+  "parent": "Work:Games",
+  "badge": "../icons/art/unixicon.png"
+}
