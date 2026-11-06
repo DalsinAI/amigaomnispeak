@@ -16,9 +16,16 @@ Requirements
 Installing
 ----------
 
-Unpack the archive where you keep games (lha x omnispeak-...lha Games:),
-then copy the Keen data files into the Keen drawer itself. Settings and
-saves are written there too.
+Unpack the archive anywhere (on AmiCradle: SYS:Utilities/OpenCompress x
+omnispeak-...lha RAM:), then double-click Install-Keen beside the Keen
+drawer: it asks where to put the game (Work:Games by default) and keeps
+the Keen data, settings and saves of an earlier install. Then copy the
+Keen data files into the installed Keen drawer itself; settings and saves
+are written there too.
+
+The drawer's Libs holds the acgame.library the game was built against, and
+the game opens that copy first. It is DalsinAI/acgame at commit
+@ACGAME_COMMIT@.
 
 Playing
 -------

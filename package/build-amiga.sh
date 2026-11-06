@@ -1,6 +1,8 @@
 #!/bin/sh
 # The release archive, for Cradle's stove_build (target package): the game
-# built with amiga/Makefile.amigaos, then tools/make_package.py makes
+# built with amiga/Makefile.amigaos on acsdl12 and acgame.library (fetched
+# and built at pinned commits by package/acgame-deps.sh, the library shipped
+# in the drawer's Libs/ with Install-Keen beside the drawer), then tools/make_package.py makes
 # omnispeak-VERSION-68040.lha with its .sha256 and .readme, the Keen drawer
 # with its GlowIcons (icons/), the drawer as it unpacks and as Keen.tar
 # (for a lab), and package.json. The Commander Keen
@@ -20,7 +22,10 @@ BUILD=$(mktemp -d "${TMPDIR:-/tmp}/omnispeak-package.XXXXXX")
 trap 'rm -rf "$BUILD"' EXIT INT TERM
 cd "$ROOT"
 
-make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" ACSDL="$ACSDL" -j4 > "$OUT/build-output.txt" 2>&1 || { tail -n 60 "$OUT/build-output.txt"; exit 1; }
+ACSDL12=1
+. "$HERE/acgame-deps.sh"
+
+make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" ACSDL="$ACSDL" ACSDLLIB="$ACSDLLIB" ACGAME="$ACGAME" ACGAMELIB="$ACGAMELIB" -j4 > "$OUT/build-output.txt" 2>&1 || { tail -n 60 "$OUT/build-output.txt"; exit 1; }
 cp build/amigaos/Omnispeak/omnispeak "$BUILD/omnispeak"
 # Omnispeak's own episode files (GPL, with the engine). It reads them from
 # the drawer itself (PROGDIR:), so Keen 4, 5 and 6 v1.4 go at its root; Keen
@@ -35,10 +40,10 @@ tar -C "$EP" --format=ustar -cf "$BUILD/episodes.tar" .
 # What the ReadMe and the check name: the program's SHA-256, the commit, the
 # compiler and the commit's date (the archive's dates, so the same inputs
 # make the same bytes).
-python3 - "$BUILD" "$STOVE/bin/m68k-amigaos-gcc" "omnispeak" <<'PY'
+python3 - "$BUILD" "$STOVE/bin/m68k-amigaos-gcc" "omnispeak" "$ACGAME_COMMIT" <<'PY'
 import hashlib, json, subprocess, sys
 from pathlib import Path
-build, cc, exe = Path(sys.argv[1]), sys.argv[2], sys.argv[3]
+build, cc, exe, acgame = Path(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 git = lambda *a: subprocess.run(["git", *a], capture_output=True, text=True).stdout.strip()
 receipt = {
     "executable_sha256": hashlib.sha256((build / exe).read_bytes()).hexdigest(),
@@ -46,6 +51,8 @@ receipt = {
     "compiler_release": subprocess.run([cc, "--version"], capture_output=True,
                                        text=True).stdout.splitlines()[0],
     "source_date_epoch": int(git("log", "-1", "--format=%ct") or 0),
+    "acgame_commit": acgame,
+    "acgame_library_sha256": hashlib.sha256((build / "acgame.library").read_bytes()).hexdigest(),
 }
 (build / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 PY
