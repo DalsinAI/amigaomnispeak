@@ -9,6 +9,11 @@
       "check": "executable_sha256"
     },
     {
+      "name": "Libs/acgame.library",
+      "build": "acgame.library",
+      "check": "acgame_library_sha256"
+    },
+    {
       "name": "omnispeak.info",
       "repo": "icons/omnispeak.info"
     },
@@ -70,5 +75,16 @@
       "Architecture",
       "m68k-amigaos >= 3.0"
     ]
+  ],
+  "root": [
+    {
+      "name": "Install-Keen",
+      "repo": "package/installer/Install-Keen",
+      "installer": true
+    },
+    {
+      "name": "Install-Keen.info",
+      "repo": "package/installer/Install-Keen.info"
+    }
   ]
 }
