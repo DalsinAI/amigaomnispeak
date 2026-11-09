@@ -1,9 +1,9 @@
 {
-  "about": "The Workbench icons of the Keen drawer: python3 AMICRADLE/scripts/port_icons.py icons/icons.json --out icons (DalsinAI/amicradle). The art is Omnispeak's own program icon (unixicon.png, GPL with the engine).",
+  "about": "The Workbench icons of the Keen drawer: python3 AMICRADLE/scripts/port_icons.py icons/icons.json --out icons (DalsinAI/amicradle). The art (art/omnispeak.svg, drawn as an OS 3.5 GlowIcon: shaped, shaded, see-through round the edges) is The AmiCradle Team's own, under the same terms as the other Amiga files; art/omnispeak.png is it rendered at 128 x 128.",
   "drawer": {
     "name": "Keen"
   },
-  "badge": "art/unixicon.png",
+  "badge": "art/omnispeak.png",
   "icons": [
     {
       "file": "omnispeak.info",
