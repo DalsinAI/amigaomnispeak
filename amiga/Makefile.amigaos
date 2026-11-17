@@ -22,7 +22,7 @@ ACSDLLIB ?= $(ACSDL)/build/amigaos
 ACGAME  ?= $(ACSDL)/../acgame
 ACGAMELIB ?= $(ACGAME)/build-amiga
 CC      = $(STOVE)/bin/m68k-amigaos-gcc
-CPU     ?= -m68040 -m68881
+CPU     ?= -m68040 -msoft-float
 OPT     ?= -O2 -fomit-frame-pointer
 CFLAGS  = -noixemul -std=gnu99 $(OPT) $(CPU) -fcommon -Wall -Wno-unused-variable \
           -Wno-unused-but-set-variable -DWITH_SDL -DWITH_KEEN4 -DWITH_KEEN5 -DWITH_KEEN6 \
