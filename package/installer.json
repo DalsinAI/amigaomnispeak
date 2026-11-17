@@ -1,6 +1,6 @@
 {
   "name": "Commander Keen (Omnispeak)",
-  "version": "git144f21e-amigaos3-test2",
+  "version": "0.0-amiga3-rc1",
   "drawer": "Keen",
   "program": "omnispeak",
   "cpu": "68040",
@@ -9,5 +9,43 @@
   "modules": [],
   "keep": [],
   "parent": "Work:Games",
-  "badge": "../icons/art/omnispeak.png"
+  "badge": "../icons/art/omnispeak.png",
+  "data": [
+    {
+      "what": "Commander Keen 4 (shareware)",
+      "files": [
+        "AUDIO.CK4",
+        "Egagraph.ck4",
+        "Gamemaps.ck4"
+      ],
+      "import": true,
+      "optional": true,
+      "page": "https://davidgow.net/keen/",
+      "download": {
+        "url": "https://davidgow.net/keen/4keen14.zip",
+        "sha256": "f92e2d02d3779a2e717a50287ef3ed116c22fdf7bcc12ccf676a412e97195cfe",
+        "size": 585043
+      }
+    },
+    {
+      "what": "your own Commander Keen 5",
+      "files": [
+        "AUDIO.CK5",
+        "EGAGRAPH.CK5",
+        "GAMEMAPS.CK5"
+      ],
+      "import": true,
+      "optional": true
+    },
+    {
+      "what": "your own Commander Keen 6",
+      "files": [
+        "AUDIO.CK6",
+        "EGAGRAPH.CK6",
+        "GAMEMAPS.CK6"
+      ],
+      "import": true,
+      "optional": true
+    }
+  ]
 }

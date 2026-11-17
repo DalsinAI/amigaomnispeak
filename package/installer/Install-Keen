@@ -1,10 +1,10 @@
-; $VER: Install-Keen git144f21e-amigaos3-test2 (6.11.2026)
+; $VER: Install-Keen 0.0-amiga3-rc1 (17.11.2026)
 ; The Amiga Installer script for Commander Keen (Omnispeak), an AmiCradle game port.
-; Made by amicradle scripts/port_installer.py: change the spec, not this file.
+; Made by amicradle scripts/ports/port_installer.py: change the spec, not this file.
 ; Run it from its icon, beside the Keen drawer where the archive was unpacked.
 
 (set @app-name "Commander Keen (Omnispeak)")
-(set #version "git144f21e-amigaos3-test2")
+(set #version "0.0-amiga3-rc1")
 (set #drawer "Keen")
 (set #program "omnispeak")
 (set #space 2930)  ; KB
@@ -30,7 +30,7 @@
 (if (<> (exists (tackon #from #program) (noreq)) 1)
     (abort "The Keen drawer has no omnispeak in it. Unpack the whole archive again."))
 
-(welcome "This installs Commander Keen (Omnispeak) git144f21e-amigaos3-test2 for AmigaOS 3.2 on a 68040, 68060 or 68080 with an FPU.")
+(welcome "This installs Commander Keen (Omnispeak) 0.0-amiga3-rc1 for AmigaOS 3.2 on a 68040, 68060 or 68080 with an FPU.")
 
 ; where: the parent drawer
 (set #default
@@ -75,11 +75,190 @@
         (dest #parent)
         (choices "Keen.info")))
 
+(set #later "")
+
+; the game data the drawer does not carry: downloaded with C:Atlas, or copied from
+; the player's own drawer, disk or CD; each file's SHA-256 checked where the spec names it
+(set #atlas (= (exists "C:Atlas" (noreq)) 1))
+
+; Commander Keen 4 (shareware)
+(set #into1 #dest)
+(if (<> (exists #into1 (noreq)) 2) (makedir #into1))
+(set #have (and (= (exists (tackon #into1 "AUDIO.CK4") (noreq)) 1) (= (exists (tackon #into1 "Egagraph.ck4") (noreq)) 1) (= (exists (tackon #into1 "Gamemaps.ck4") (noreq)) 1)))
+(if (not #have)
+    (
+        (set #how
+            (askchoice
+                (prompt "Commander Keen (Omnispeak) needs Commander Keen 4 (shareware). How should the Installer get it?")
+                (help "Commander Keen (Omnispeak) needs Commander Keen 4 (shareware): AUDIO.CK4, Egagraph.ck4, Gamemaps.ck4, in the drawer itself. Download fetches 4keen14.zip from https://davidgow.net/keen/4keen14.zip with C:Atlas (AmiPortAtlas) and checks its SHA-256. Copy takes the files from a drawer you choose: the game's own install, a disk or a CD. The files come from https://davidgow.net/keen/. Not now leaves the drawer as it is: run the Installer again later, or copy the files in yourself.")
+                (choices "Download it now (1 MB, needs the network)" "Copy it from my own drawer, disk or CD" "Not now: the game starts without it")
+                (default 0)))
+        (if (and (= #how 0) (not #atlas))
+            (
+                (message "C:Atlas, which downloads it, is not on this Amiga: install AmiPortAtlas (its C/Atlas goes in C:). Or download https://davidgow.net/keen/4keen14.zip on another computer and choose Copy.")
+                (set #how 2)
+            )
+        )
+        (if (= #how 0)
+            (
+                (set #arc1 (tackon #dest "4keen14.zip"))
+                (working "Downloading 4keen14.zip for Commander Keen 4 (shareware).")
+                (set #rc 0)
+                (if (not @pretend)
+                    (set #rc (run (cat "C:Atlas FETCH URL=\"https://davidgow.net/keen/4keen14.zip\" TO=\"" #arc1 "\" SHA256=f92e2d02d3779a2e717a50287ef3ed116c22fdf7bcc12ccf676a412e97195cfe"))))
+                (if (<> #rc 0)
+                    (
+                        (message "The download of 4keen14.zip did not complete or did not check out. Commander Keen (Omnispeak) is installed without Commander Keen 4 (shareware): run Install-Keen again to try once more.")
+                        (set #how 2)
+                    )
+                )
+                (if (and (= #how 0) (<> (exists "SYS:Utilities/GFOpenCompress" (noreq)) 1))
+                    (
+                        (message "SYS:Utilities/GFOpenCompress, which unpacks 4keen14.zip, is not on this Amiga. It is left in the drawer: unpack it there yourself.")
+                        (set #how 2)
+                    )
+                )
+                (if (= #how 0)
+                    (
+                        (set #unpack (tackon #dest "Unpack"))
+                        (if (= (exists #unpack (noreq)) 2) (delete #unpack (all) (optional "force")))
+                        (makedir #unpack)
+                        (working "Unpacking 4keen14.zip.")
+                        (if (not @pretend) (run (cat "SYS:Utilities/GFOpenCompress x \"" #arc1 "\" \"" #unpack "\" >NIL:")))
+                        (copyfiles
+                            (prompt "Copying Commander Keen 4 (shareware)")
+                            (help @copyfiles-help)
+                            (source #unpack)
+                            (dest #into1)
+                            (choices "AUDIO.CK4" "Egagraph.ck4" "Gamemaps.ck4")
+                            (optional "nofail" "force"))
+                        (delete #unpack (all) (optional "force"))
+                        (delete #arc1 (optional "force"))
+                    )
+                )
+            )
+        )
+        (if (= #how 1)
+            (
+                (set #src
+                    (askdir
+                        (prompt "Choose the drawer (or disk, or CD) that has AUDIO.CK4, Egagraph.ck4, Gamemaps.ck4.")
+                        (help "Commander Keen (Omnispeak) needs Commander Keen 4 (shareware): AUDIO.CK4, Egagraph.ck4, Gamemaps.ck4, in the drawer itself. Download fetches 4keen14.zip from https://davidgow.net/keen/4keen14.zip with C:Atlas (AmiPortAtlas) and checks its SHA-256. Copy takes the files from a drawer you choose: the game's own install, a disk or a CD. The files come from https://davidgow.net/keen/. Not now leaves the drawer as it is: run the Installer again later, or copy the files in yourself.")
+                        (default #dest)))
+                (set #ok 1)
+                (if (<> (exists (tackon #src "AUDIO.CK4") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no AUDIO.CK4 in " #src ". Nothing was copied for Commander Keen 4 (shareware): run Install-Keen again to choose another drawer."))))
+                (if (<> (exists (tackon #src "Egagraph.ck4") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no Egagraph.ck4 in " #src ". Nothing was copied for Commander Keen 4 (shareware): run Install-Keen again to choose another drawer."))))
+                (if (<> (exists (tackon #src "Gamemaps.ck4") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no Gamemaps.ck4 in " #src ". Nothing was copied for Commander Keen 4 (shareware): run Install-Keen again to choose another drawer."))))
+                (if #ok
+                    (copyfiles
+                        (prompt "Copying Commander Keen 4 (shareware)")
+                        (help @copyfiles-help)
+                        (source #src)
+                        (dest #into1)
+                        (choices "AUDIO.CK4" "Egagraph.ck4" "Gamemaps.ck4")
+                        (optional "nofail" "force")))
+            )
+        )
+        (if (= #how 2)
+            (set #later (if (= #later "") "Commander Keen 4 (shareware)" (cat #later ", " "Commander Keen 4 (shareware)")))
+        )
+    )
+)
+
+; your own Commander Keen 5
+(set #into2 #dest)
+(if (<> (exists #into2 (noreq)) 2) (makedir #into2))
+(set #have (and (= (exists (tackon #into2 "AUDIO.CK5") (noreq)) 1) (= (exists (tackon #into2 "EGAGRAPH.CK5") (noreq)) 1) (= (exists (tackon #into2 "GAMEMAPS.CK5") (noreq)) 1)))
+(if (not #have)
+    (
+        (set #how
+            (askchoice
+                (prompt "Commander Keen (Omnispeak) needs your own Commander Keen 5. How should the Installer get it?")
+                (help "Commander Keen (Omnispeak) needs your own Commander Keen 5: AUDIO.CK5, EGAGRAPH.CK5, GAMEMAPS.CK5, in the drawer itself. Copy takes the files from a drawer you choose: the game's own install, a disk or a CD. Not now leaves the drawer as it is: run the Installer again later, or copy the files in yourself.")
+                (choices "Copy it from my own drawer, disk or CD" "Not now: the game starts without it")
+                (default 0)))
+        (if (= #how 0)
+            (
+                (set #src
+                    (askdir
+                        (prompt "Choose the drawer (or disk, or CD) that has AUDIO.CK5, EGAGRAPH.CK5, GAMEMAPS.CK5.")
+                        (help "Commander Keen (Omnispeak) needs your own Commander Keen 5: AUDIO.CK5, EGAGRAPH.CK5, GAMEMAPS.CK5, in the drawer itself. Copy takes the files from a drawer you choose: the game's own install, a disk or a CD. Not now leaves the drawer as it is: run the Installer again later, or copy the files in yourself.")
+                        (default #dest)))
+                (set #ok 1)
+                (if (<> (exists (tackon #src "AUDIO.CK5") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no AUDIO.CK5 in " #src ". Nothing was copied for your own Commander Keen 5: run Install-Keen again to choose another drawer."))))
+                (if (<> (exists (tackon #src "EGAGRAPH.CK5") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no EGAGRAPH.CK5 in " #src ". Nothing was copied for your own Commander Keen 5: run Install-Keen again to choose another drawer."))))
+                (if (<> (exists (tackon #src "GAMEMAPS.CK5") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no GAMEMAPS.CK5 in " #src ". Nothing was copied for your own Commander Keen 5: run Install-Keen again to choose another drawer."))))
+                (if #ok
+                    (copyfiles
+                        (prompt "Copying your own Commander Keen 5")
+                        (help @copyfiles-help)
+                        (source #src)
+                        (dest #into2)
+                        (choices "AUDIO.CK5" "EGAGRAPH.CK5" "GAMEMAPS.CK5")
+                        (optional "nofail" "force")))
+            )
+        )
+        (if (= #how 1)
+            (set #later (if (= #later "") "your own Commander Keen 5" (cat #later ", " "your own Commander Keen 5")))
+        )
+    )
+)
+
+; your own Commander Keen 6
+(set #into3 #dest)
+(if (<> (exists #into3 (noreq)) 2) (makedir #into3))
+(set #have (and (= (exists (tackon #into3 "AUDIO.CK6") (noreq)) 1) (= (exists (tackon #into3 "EGAGRAPH.CK6") (noreq)) 1) (= (exists (tackon #into3 "GAMEMAPS.CK6") (noreq)) 1)))
+(if (not #have)
+    (
+        (set #how
+            (askchoice
+                (prompt "Commander Keen (Omnispeak) needs your own Commander Keen 6. How should the Installer get it?")
+                (help "Commander Keen (Omnispeak) needs your own Commander Keen 6: AUDIO.CK6, EGAGRAPH.CK6, GAMEMAPS.CK6, in the drawer itself. Copy takes the files from a drawer you choose: the game's own install, a disk or a CD. Not now leaves the drawer as it is: run the Installer again later, or copy the files in yourself.")
+                (choices "Copy it from my own drawer, disk or CD" "Not now: the game starts without it")
+                (default 0)))
+        (if (= #how 0)
+            (
+                (set #src
+                    (askdir
+                        (prompt "Choose the drawer (or disk, or CD) that has AUDIO.CK6, EGAGRAPH.CK6, GAMEMAPS.CK6.")
+                        (help "Commander Keen (Omnispeak) needs your own Commander Keen 6: AUDIO.CK6, EGAGRAPH.CK6, GAMEMAPS.CK6, in the drawer itself. Copy takes the files from a drawer you choose: the game's own install, a disk or a CD. Not now leaves the drawer as it is: run the Installer again later, or copy the files in yourself.")
+                        (default #dest)))
+                (set #ok 1)
+                (if (<> (exists (tackon #src "AUDIO.CK6") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no AUDIO.CK6 in " #src ". Nothing was copied for your own Commander Keen 6: run Install-Keen again to choose another drawer."))))
+                (if (<> (exists (tackon #src "EGAGRAPH.CK6") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no EGAGRAPH.CK6 in " #src ". Nothing was copied for your own Commander Keen 6: run Install-Keen again to choose another drawer."))))
+                (if (<> (exists (tackon #src "GAMEMAPS.CK6") (noreq)) 1)
+                    ((set #ok 0) (message (cat "There is no GAMEMAPS.CK6 in " #src ". Nothing was copied for your own Commander Keen 6: run Install-Keen again to choose another drawer."))))
+                (if #ok
+                    (copyfiles
+                        (prompt "Copying your own Commander Keen 6")
+                        (help @copyfiles-help)
+                        (source #src)
+                        (dest #into3)
+                        (choices "AUDIO.CK6" "EGAGRAPH.CK6" "GAMEMAPS.CK6")
+                        (optional "nofail" "force")))
+            )
+        )
+        (if (= #how 1)
+            (set #later (if (= #later "") "your own Commander Keen 6" (cat #later ", " "your own Commander Keen 6")))
+        )
+    )
+)
+(complete 90)
+
 (set @default-dest #dest)
 (complete 100)
 (if @pretend
     (message (cat "Pretend: nothing was copied or changed. Commander Keen (Omnispeak) would have gone in " #dest "."))
-    (message (cat "Commander Keen (Omnispeak) git144f21e-amigaos3-test2 is installed in " #dest "."
+    (message (cat "Commander Keen (Omnispeak) 0.0-amiga3-rc1 is installed in " #dest "."
                   "\n\nTo start it, open the Keen drawer and double-click the omnispeak icon."
-                  (if (= #kept "") "" (cat "\n\nLeft as they were: " #kept ".")))))
+                  (if (= #kept "") "" (cat "\n\nLeft as they were: " #kept "."))
+                  (if (= #later "") "" (cat "\n\nStill to add to the drawer: " #later ". Run Install-Keen again to fetch or copy it.")))))
 (exit (quiet))

@@ -25,7 +25,12 @@ cd "$ROOT"
 ACSDL12=1
 . "$HERE/acgame-deps.sh"
 
-make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" ACSDL="$ACSDL" ACSDLLIB="$ACSDLLIB" ACGAME="$ACGAME" ACGAMELIB="$ACGAMELIB" -j4 > "$OUT/build-output.txt" 2>&1 || { tail -n 60 "$OUT/build-output.txt"; exit 1; }
+make -f amiga/Makefile.amigaos STOVE="$STOVE" NDK="$NDK" ACSDL="$ACSDL" ACSDLLIB="$ACSDLLIB" ACGAME="$ACGAME" ACGAMELIB="$ACGAMELIB" -j"${JOBS:-2}" > "$OUT/build-output.txt" 2>&1 || { tail -n 60 "$OUT/build-output.txt"; exit 1; }
+# One binary for every 68040 and 68060: -m68040 -msoft-float throughout (the
+# game and acsdl12), no FPU instruction in their objects, the stove's fpuauto
+# linked in.
+{ sh "$HERE/soft-float.sh" "$STOVE" build/amigaos/Omnispeak/omnispeak --log "$OUT/build-output.txt" --log "$OUT/acsdl12-output.txt" build/amigaos "$ACSDLLIB"; } > "$OUT/soft-float.txt" || { cat "$OUT/soft-float.txt"; exit 1; }
+cat "$OUT/soft-float.txt"
 cp build/amigaos/Omnispeak/omnispeak "$BUILD/omnispeak"
 # Omnispeak's own episode files (GPL, with the engine). It reads them from
 # the drawer itself (PROGDIR:), so Keen 4, 5 and 6 v1.4 go at its root; Keen
